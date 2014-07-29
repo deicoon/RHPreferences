@@ -10,10 +10,10 @@
 #import <RHPreferences/RHPreferences.h>
 
 @interface RHAccountsViewController : NSViewController  <RHPreferencesViewControllerProtocol> {
-    NSTextField *usernameTextField;
+    __weak NSTextField * usernameTextField;
 }
 
-@property (assign) IBOutlet NSTextField *usernameTextField;
+@property (weak) IBOutlet NSTextField *usernameTextField;
 
 
 @end
