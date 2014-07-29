@@ -30,6 +30,7 @@
 		1330B7C4156DF61B00F2E3ED /* RHWideViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1330B7C2156DF61B00F2E3ED /* RHWideViewController.m */; };
 		1330B7C5156DF61B00F2E3ED /* RHWideViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1330B7C3156DF61B00F2E3ED /* RHWideViewController.xib */; };
 		1330B7C7156DF9C600F2E3ED /* WidePreferences.png in Resources */ = {isa = PBXBuildFile; fileRef = 1330B7C6156DF9C600F2E3ED /* WidePreferences.png */; };
+		6E7440B619879D0A0092D257 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E7440B519879D0A0092D257 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +90,7 @@
 		1330B7C2156DF61B00F2E3ED /* RHWideViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RHWideViewController.m; sourceTree = "<group>"; };
 		1330B7C3156DF61B00F2E3ED /* RHWideViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RHWideViewController.xib; sourceTree = "<group>"; };
 		1330B7C6156DF9C600F2E3ED /* WidePreferences.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WidePreferences.png; sourceTree = "<group>"; };
+		6E7440B519879D0A0092D257 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6E7440B619879D0A0092D257 /* QuartzCore.framework in Frameworks */,
 				1330B770156DA90C00F2E3ED /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -134,6 +137,7 @@
 		1330B76E156DA90C00F2E3ED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6E7440B519879D0A0092D257 /* QuartzCore.framework */,
 				1330B76F156DA90C00F2E3ED /* Cocoa.framework */,
 				1330B771156DA90C00F2E3ED /* Other Frameworks */,
 			);

@@ -30,8 +30,10 @@
 
 #import "RHPreferencesWindowController.h"
 
+#import <QuartzCore/CoreAnimation.h>
+
 static NSString * const RHPreferencesWindowControllerSelectedItemIdentifier = @"RHPreferencesWindowControllerSelectedItemIdentifier";
-static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100Pixels = 0.05f;
+static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100Pixels = 0.1f;
 
 #pragma mark - Custom Item Placeholder Controller
 @interface RHPreferencesCustomPlaceholderController : NSObject <RHPreferencesViewControllerProtocol> {
@@ -101,6 +103,17 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
         //store the controllers
         [self setViewControllers:controllers];
         _unloadedWindowTitle = [title copy];
+        
+        NSView *contentView = [[self window] contentView];
+        [contentView setWantsLayer:YES];
+
+        CATransition* transition = [CATransition animation];
+        [transition setType:kCATransitionFade];
+        [transition setSpeed:.9];
+        
+        NSDictionary *ani = [NSDictionary dictionaryWithObject:transition
+                                                        forKey:@"subviews"];
+        [contentView setAnimations:ani];
         
     }
     
@@ -176,13 +189,29 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
     }    
     
     if (old != new){
-                
+        [new.view setFrameOrigin:NSMakePoint(0, 0)]; // force our view to a 0,0 origin, fixed in the lower right corner.
+        [new.view setAutoresizingMask:NSViewMaxXMargin|NSViewMaxYMargin|NSViewMinXMargin|NSViewMinYMargin];
+        
+        //resize to Preferred window size for given view (duration is determined by difference between current and new sizes)
+        float hDifference = fabs(new.view.bounds.size.height - old.view.bounds.size.height);
+        float wDifference = fabs(new.view.bounds.size.width - old.view.bounds.size.width);
+        float difference = MAX(hDifference, wDifference);
+        float duration = MAX(RHPreferencesWindowControllerResizeAnimationDurationPer100Pixels * ( difference / 100), 0.10); // we always want a slight animation
+        
+        [NSAnimationContext beginGrouping];
+        [[NSAnimationContext currentContext] setDuration:duration];
+        
         //notify the old vc that its going away
         if ([old respondsToSelector:@selector(viewWillDisappear)]){
             [(id)old viewWillDisappear];
         }
         
-        [old.view removeFromSuperview];
+        if (nil != old) {
+            [[self.window.contentView animator] replaceSubview:old.view
+                                                          with:new.view];
+        } else {
+            [[self.window.contentView animator] addSubview:new.view];
+        }
         
         if ([old respondsToSelector:@selector(viewDidDisappear)]){
             [(id)old viewDidDisappear];
@@ -192,12 +221,7 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
         if ([new respondsToSelector:@selector(viewWillAppear)]){
             [(id)new viewWillAppear];
         }   
-                
-        //resize to Preferred window size for given view (duration is determined by difference between current and new sizes)
-        float hDifference = fabs(new.view.bounds.size.height - old.view.bounds.size.height);
-        float wDifference = fabs(new.view.bounds.size.width - old.view.bounds.size.width);
-        float difference = MAX(hDifference, wDifference);
-        float duration = MAX(RHPreferencesWindowControllerResizeAnimationDurationPer100Pixels * ( difference / 100), 0.10); // we always want a slight animation        
+        
         [self resizeWindowForContentSize:new.view.bounds.size duration:duration];
 
         double delayInSeconds = duration + 0.02; // +.02 to give time for resize to finish before appearing
@@ -206,7 +230,7 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
 
             //make sure our "new" vc is still the selected vc before we add it as a subview, otherwise it's possible we could add more than one vc to the window. (the user has likely clicked to another tab during resizing.)
             if (_selectedViewController == new){
-                [self.window.contentView addSubview:new.view];
+                //[self.window.contentView addSubview:new.view];
                 
                 if ([new respondsToSelector:@selector(viewDidAppear)]){
                     [(id)new viewDidAppear];
@@ -219,9 +243,7 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
             }
         });
         
-
-        [new.view setFrameOrigin:NSMakePoint(0, 0)]; // force our view to a 0,0 origin, fixed in the lower right corner.
-        [new.view setAutoresizingMask:NSViewMaxXMargin|NSViewMaxYMargin];
+        [NSAnimationContext endGrouping];
         
         //set the currently selected toolbar item
         [_toolbar setSelectedItemIdentifier:[self toolbarItemIdentifierForViewController:new]];
@@ -271,10 +293,8 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
     NSRect newFrame = [window frameRectForContentRect:NSMakeRect(newX, NSMaxY(frame) - size.height, size.width, size.height)];
     
     if (duration > 0.0f){
-        [NSAnimationContext beginGrouping];
-        [[NSAnimationContext currentContext] setDuration:duration];
+        //[[NSAnimationContext currentContext] setDuration:duration];
             [[window animator] setFrame:newFrame display:YES];
-        [NSAnimationContext endGrouping];
     } else {
         [window setFrame:newFrame display:YES];
     }
