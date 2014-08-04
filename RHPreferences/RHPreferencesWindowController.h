@@ -92,6 +92,8 @@
 -(void)viewWillDisappear;
 -(void)viewDidDisappear;
 
+-(void)viewWindowDidBecomeKey;
+
 -(NSView*)initialKeyView;   // keyboard focus view on tab switch...
 
 @end
