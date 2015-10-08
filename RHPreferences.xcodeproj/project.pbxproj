@@ -31,6 +31,8 @@
 		1330B7C5156DF61B00F2E3ED /* RHWideViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1330B7C3156DF61B00F2E3ED /* RHWideViewController.xib */; };
 		1330B7C7156DF9C600F2E3ED /* WidePreferences.png in Resources */ = {isa = PBXBuildFile; fileRef = 1330B7C6156DF9C600F2E3ED /* WidePreferences.png */; };
 		6E7440B619879D0A0092D257 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E7440B519879D0A0092D257 /* QuartzCore.framework */; };
+		D8F7B0301BC68F3700F25BE2 /* RHNewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8F7B02F1BC68F3700F25BE2 /* RHNewViewController.m */; settings = {ASSET_TAGS = (); }; };
+		D8F7B0321BC68F4B00F25BE2 /* RHNewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D8F7B0311BC68F4B00F25BE2 /* RHNewViewController.xib */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +93,9 @@
 		1330B7C3156DF61B00F2E3ED /* RHWideViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RHWideViewController.xib; sourceTree = "<group>"; };
 		1330B7C6156DF9C600F2E3ED /* WidePreferences.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WidePreferences.png; sourceTree = "<group>"; };
 		6E7440B519879D0A0092D257 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		D8F7B02E1BC68F3700F25BE2 /* RHNewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RHNewViewController.h; sourceTree = "<group>"; };
+		D8F7B02F1BC68F3700F25BE2 /* RHNewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RHNewViewController.m; sourceTree = "<group>"; };
+		D8F7B0311BC68F4B00F25BE2 /* RHNewViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RHNewViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,8 +211,9 @@
 		1330B7AC156DAD2E00F2E3ED /* Demo Preference View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				D8F7B02D1BC68F1800F25BE2 /* NewContent */,
+				D8F7B02C1BC68F0100F25BE2 /* New Group */,
 				1330B7B4156DAE7E00F2E3ED /* Accounts */,
-				1330B7AD156DAD8900F2E3ED /* About */,
 				1330B7C0156DF59200F2E3ED /* Resizing */,
 			);
 			name = "Demo Preference View Controllers";
@@ -241,6 +247,24 @@
 				1330B7C3156DF61B00F2E3ED /* RHWideViewController.xib */,
 			);
 			name = Resizing;
+			sourceTree = "<group>";
+		};
+		D8F7B02C1BC68F0100F25BE2 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+				1330B7AD156DAD8900F2E3ED /* About */,
+			);
+			name = "New Group";
+			sourceTree = "<group>";
+		};
+		D8F7B02D1BC68F1800F25BE2 /* NewContent */ = {
+			isa = PBXGroup;
+			children = (
+				D8F7B02E1BC68F3700F25BE2 /* RHNewViewController.h */,
+				D8F7B02F1BC68F3700F25BE2 /* RHNewViewController.m */,
+				D8F7B0311BC68F4B00F25BE2 /* RHNewViewController.xib */,
+			);
+			name = NewContent;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -344,6 +368,7 @@
 				1330B7BB156DAE9F00F2E3ED /* RHAboutViewController.xib in Resources */,
 				1330B7BE156DF56900F2E3ED /* AboutPreferences.png in Resources */,
 				1330B7BF156DF56900F2E3ED /* AccountsPreferences.png in Resources */,
+				D8F7B0321BC68F4B00F25BE2 /* RHNewViewController.xib in Resources */,
 				1330B7C5156DF61B00F2E3ED /* RHWideViewController.xib in Resources */,
 				1330B7C7156DF9C600F2E3ED /* WidePreferences.png in Resources */,
 			);
@@ -369,6 +394,7 @@
 				1330B7B8156DAE8D00F2E3ED /* RHAccountsViewController.m in Sources */,
 				1330B7BA156DAE9A00F2E3ED /* RHAboutViewController.m in Sources */,
 				1330B7C4156DF61B00F2E3ED /* RHWideViewController.m in Sources */,
+				D8F7B0301BC68F3700F25BE2 /* RHNewViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

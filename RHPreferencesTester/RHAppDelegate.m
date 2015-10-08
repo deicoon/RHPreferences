@@ -10,6 +10,7 @@
 #import "RHAboutViewController.h"
 #import "RHAccountsViewController.h"
 #import "RHWideViewController.h"
+#import "RHNewViewController.h"
 
 @implementation RHAppDelegate
 
@@ -32,10 +33,10 @@
         RHAccountsViewController *accounts = [[RHAccountsViewController alloc] init];
         RHAboutViewController *about = [[RHAboutViewController alloc] init];
         RHWideViewController *wide = [[RHWideViewController alloc] init];
-        
+        RHNewViewController *new = [[RHNewViewController alloc] initWithNibName:nil	 bundle:nil];
         NSArray *controllers = [NSArray arrayWithObjects:accounts, wide, 
                                 [RHPreferencesWindowController flexibleSpacePlaceholderController], 
-                                about,
+                                about,                                new,
                                 nil];
         
         _preferencesWindowController = [[RHPreferencesWindowController alloc] initWithViewControllers:controllers andTitle:NSLocalizedString(@"Preferences", @"Preferences Window Title")];
