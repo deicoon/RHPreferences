@@ -30,26 +30,28 @@
 
 #import "RHPreferencesWindowController.h"
 
+#import <QuartzCore/CoreAnimation.h>
+
 static NSString * const RHPreferencesWindowControllerSelectedItemIdentifier = @"RHPreferencesWindowControllerSelectedItemIdentifier";
-static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100Pixels = 0.05f;
+static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100Pixels = 0.1f;
 
 #pragma mark - Custom Item Placeholder Controller
 @interface RHPreferencesCustomPlaceholderController : NSObject <RHPreferencesViewControllerProtocol> {
     NSString *_identifier;
 }
 +(id)controllerWithIdentifier:(NSString*)identifier;
-@property (readwrite, nonatomic, retain) NSString *identifier;
+@property (readwrite, nonatomic, strong) NSString *identifier;
 @end
 
 @implementation RHPreferencesCustomPlaceholderController
 @synthesize identifier=_identifier;
 +(id)controllerWithIdentifier:(NSString*)identifier{
-    RHPreferencesCustomPlaceholderController * placeholder = [[[RHPreferencesCustomPlaceholderController alloc] init] autorelease];
+    RHPreferencesCustomPlaceholderController * placeholder = [[RHPreferencesCustomPlaceholderController alloc] init];
     placeholder.identifier = identifier;
     return placeholder;
 }
 -(NSToolbarItem*)toolbarItem{
-    NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:_identifier] autorelease];
+    NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:_identifier];
     return item;
 }
 -(NSString*)identifier{
@@ -64,6 +66,12 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
 @end
 
 
+@interface RHPreferencesFlippedContentView : NSView
+@end
+@implementation RHPreferencesFlippedContentView
+- (BOOL)isFlipped { return YES; }
+@end
+
 #pragma mark - RHPreferencesWindowController
 
 @interface RHPreferencesWindowController ()
@@ -77,6 +85,8 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
 
 //NSWindowController methods
 -(void)resizeWindowForContentSize:(NSSize)size duration:(CGFloat)duration;
+
+- (NSTimeInterval)durationForTransitionFromOldSize:(NSSize)oldSize toNewSize:(NSSize)newSize;
 
 @end
 
@@ -102,9 +112,26 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
         [self setViewControllers:controllers];
         _unloadedWindowTitle = [title copy];
         
+        NSView *contentView = [[self window] contentView];
+        [contentView setWantsLayer:YES];
+
+        CATransition* transition = [CATransition animation];
+        [transition setType:kCATransitionFade];
+        [transition setSpeed:.9];
+        
+        NSDictionary *ani = [NSDictionary dictionaryWithObject:transition
+                                                        forKey:@"subviews"];
+        [contentView setAnimations:ani];
+        
     }
     
     return self;
+}
+
+- (void)dealloc
+{
+    [self->_selectedViewController removeObserver:self
+                                       forKeyPath:@"view.frame"];
 }
 
 #pragma mark - properties
@@ -116,21 +143,19 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
     if ([self isWindowLoaded]){
         self.window.title = windowTitle;
     } else {
-        [_unloadedWindowTitle release];
         _unloadedWindowTitle = [windowTitle copy];
     }
 }
 
 -(NSArray*)viewControllers{
-    return [[_viewControllers retain] autorelease];
+    return _viewControllers;
 }
 
 -(void)setViewControllers:(NSArray *)viewControllers{
     if (_viewControllers != viewControllers){
         NSUInteger oldSelectedIndex = [self selectedIndex];
         
-        [_viewControllers autorelease];
-        _viewControllers = [viewControllers retain];
+        _viewControllers = viewControllers;
         
         //update the selected controller if we had one previously.
         if (_selectedViewController){
@@ -157,7 +182,7 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
 }
 
 -(NSViewController<RHPreferencesViewControllerProtocol>*)selectedViewController{
-    return [[_selectedViewController retain] autorelease];
+    return _selectedViewController;
 }
 
 -(void)setSelectedViewController:(NSViewController<RHPreferencesViewControllerProtocol> *)new{
@@ -167,6 +192,14 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
     //stash
     _selectedViewController = new; //weak because we retain it in our array
 
+    [old removeObserver:self
+             forKeyPath:@"view.frame"];
+    
+    [new addObserver:self
+          forKeyPath:@"view.frame"
+             options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
+             context:NULL];
+    
     //stash to defaults also
     [[NSUserDefaults standardUserDefaults] setObject:[self toolbarItemIdentifierForViewController:new] forKey:RHPreferencesWindowControllerSelectedItemIdentifier];
     
@@ -176,13 +209,26 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
     }    
     
     if (old != new){
-                
+        [new.view setFrameOrigin:NSMakePoint(0, 0)]; // force our view to a 0,0 origin, fixed in the lower right corner.
+        [new.view setAutoresizingMask:NSViewMaxXMargin|NSViewMaxYMargin|NSViewMinXMargin|NSViewMinYMargin];
+        
+        NSTimeInterval duration = [self durationForTransitionFromOldSize:old.view.bounds.size
+                                                               toNewSize:new.view.bounds.size];
+        
+        [NSAnimationContext beginGrouping];
+        [[NSAnimationContext currentContext] setDuration:duration];
+        
         //notify the old vc that its going away
         if ([old respondsToSelector:@selector(viewWillDisappear)]){
             [(id)old viewWillDisappear];
         }
         
-        [old.view removeFromSuperview];
+        if (nil != old) {
+            [[self.window.contentView animator] replaceSubview:old.view
+                                                          with:new.view];
+        } else {
+            [[self.window.contentView animator] addSubview:new.view];
+        }
         
         if ([old respondsToSelector:@selector(viewDidDisappear)]){
             [(id)old viewDidDisappear];
@@ -192,12 +238,7 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
         if ([new respondsToSelector:@selector(viewWillAppear)]){
             [(id)new viewWillAppear];
         }   
-                
-        //resize to Preferred window size for given view (duration is determined by difference between current and new sizes)
-        float hDifference = fabs(new.view.bounds.size.height - old.view.bounds.size.height);
-        float wDifference = fabs(new.view.bounds.size.width - old.view.bounds.size.width);
-        float difference = MAX(hDifference, wDifference);
-        float duration = MAX(RHPreferencesWindowControllerResizeAnimationDurationPer100Pixels * ( difference / 100), 0.10); // we always want a slight animation        
+        
         [self resizeWindowForContentSize:new.view.bounds.size duration:duration];
 
         double delayInSeconds = duration + 0.02; // +.02 to give time for resize to finish before appearing
@@ -206,7 +247,7 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
 
             //make sure our "new" vc is still the selected vc before we add it as a subview, otherwise it's possible we could add more than one vc to the window. (the user has likely clicked to another tab during resizing.)
             if (_selectedViewController == new){
-                [self.window.contentView addSubview:new.view];
+                //[self.window.contentView addSubview:new.view];
                 
                 if ([new respondsToSelector:@selector(viewDidAppear)]){
                     [(id)new viewDidAppear];
@@ -219,9 +260,7 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
             }
         });
         
-
-        [new.view setFrameOrigin:NSMakePoint(0, 0)]; // force our view to a 0,0 origin, fixed in the lower right corner.
-        [new.view setAutoresizingMask:NSViewMaxXMargin|NSViewMaxYMargin];
+        [NSAnimationContext endGrouping];
         
         //set the currently selected toolbar item
         [_toolbar setSelectedItemIdentifier:[self toolbarItemIdentifierForViewController:new]];
@@ -259,6 +298,25 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
     return nil;
 }
 
+#pragma mark - KVO Observer
+
+- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+    if (object == self->_selectedViewController) {
+        if ([keyPath isEqualToString:@"view.frame"]) {
+            NSRect oldFrame = [[change objectForKey:NSKeyValueChangeOldKey] rectValue];
+            NSRect newFrame = [[change objectForKey:NSKeyValueChangeNewKey] rectValue];
+            
+            if (!NSEqualSizes(oldFrame.size, newFrame.size)) {
+                NSTimeInterval duration = [self durationForTransitionFromOldSize:oldFrame.size
+                                                                       toNewSize:newFrame.size];
+                
+                [self resizeWindowForContentSize:newFrame.size
+                                        duration:duration];
+            }
+        }
+    }
+}
 
 #pragma mark - View Controller Methods
 
@@ -271,10 +329,8 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
     NSRect newFrame = [window frameRectForContentRect:NSMakeRect(newX, NSMaxY(frame) - size.height, size.width, size.height)];
     
     if (duration > 0.0f){
-        [NSAnimationContext beginGrouping];
-        [[NSAnimationContext currentContext] setDuration:duration];
+        //[[NSAnimationContext currentContext] setDuration:duration];
             [[window animator] setFrame:newFrame display:YES];
-        [NSAnimationContext endGrouping];
     } else {
         [window setFrame:newFrame display:YES];
     }
@@ -339,13 +395,12 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
         NSToolbarItem *insertItem = [self toolbarItemWithItemIdentifier:vc.identifier];
         if (!insertItem){
             //create a new one
-            insertItem = [[self newToolbarItemForViewController:vc] autorelease];
+            insertItem = [self newToolbarItemForViewController:vc];
         }
         [newItems addObject:insertItem];
     }
     
-    [_toolbarItems release];
-    _toolbarItems = [[NSArray arrayWithArray:newItems] retain];
+    _toolbarItems = [NSArray arrayWithArray:newItems];
 }
 
 
@@ -407,7 +462,7 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
     
     if (_unloadedWindowTitle){
         self.window.title = _unloadedWindowTitle;
-        [_unloadedWindowTitle release]; _unloadedWindowTitle = nil;
+         _unloadedWindowTitle = nil;
     }
     
     if (_selectedViewController){
@@ -453,6 +508,15 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
 
 #pragma mark - NSWindowDelegate
 
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+    if ([self window] == [notification object]) {
+        if ([self->_selectedViewController respondsToSelector:@selector(viewWindowDidBecomeKey)]) {
+            [self->_selectedViewController viewWindowDidBecomeKey];
+        }
+    }
+}
+
 -(BOOL)windowShouldClose:(id)sender{
     if (_selectedViewController){
         return [_selectedViewController commitEditing];
@@ -482,6 +546,17 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
 
 -(NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar{
     return [self toolbarItemIdentifiers];
+}
+
+- (NSTimeInterval)durationForTransitionFromOldSize:(NSSize)oldSize toNewSize:(NSSize)newSize
+{
+    //resize to Preferred window size for given view (duration is determined by difference between current and new sizes)
+    float hDifference = fabs(newSize.height - oldSize.height);
+    float wDifference = fabs(newSize.width - oldSize.width);
+    float difference = MAX(hDifference, wDifference);
+    float duration = MAX(RHPreferencesWindowControllerResizeAnimationDurationPer100Pixels * ( difference / 100), 0.10); // we always want a slight animation
+    
+    return (NSTimeInterval)duration;
 }
 
 @end

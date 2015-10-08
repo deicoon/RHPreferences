@@ -52,11 +52,11 @@
 @property (copy) NSString *windowTitle;
 @property (assign) BOOL windowTitleShouldAutomaticlyUpdateToReflectSelectedViewController; //defaults to YES
 
-@property (retain) IBOutlet NSToolbar *toolbar;
-@property (retain) IBOutlet NSArray *viewControllers; //controllers should implement RHPreferencesViewControllerProtocol
+@property (strong) IBOutlet NSToolbar *toolbar;
+@property (strong) IBOutlet NSArray *viewControllers; //controllers should implement RHPreferencesViewControllerProtocol
 
 @property (assign) NSUInteger selectedIndex;
-@property (assign) NSViewController <RHPreferencesViewControllerProtocol> *selectedViewController;
+@property (weak) NSViewController <RHPreferencesViewControllerProtocol> *selectedViewController;
 
 -(NSViewController <RHPreferencesViewControllerProtocol>*)viewControllerWithIdentifier:(NSString*)identifier;
 
@@ -91,6 +91,8 @@
 -(void)viewDidAppear;
 -(void)viewWillDisappear;
 -(void)viewDidDisappear;
+
+-(void)viewWindowDidBecomeKey;
 
 -(NSView*)initialKeyView;   // keyboard focus view on tab switch...
 

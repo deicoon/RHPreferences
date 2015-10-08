@@ -10,9 +10,9 @@
 #import <RHPreferences/RHPreferences.h>
 
 @interface RHAboutViewController : NSViewController  <RHPreferencesViewControllerProtocol> {
-    NSTextField *_emailTextField;
+    __weak NSTextField* _emailTextField;
 }
 
-@property (assign) IBOutlet NSTextField *emailTextField;
+@property (weak) IBOutlet NSTextField *emailTextField;
 
 @end
