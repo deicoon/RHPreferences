@@ -11,12 +11,12 @@
 
 @interface RHAppDelegate : NSObject <NSApplicationDelegate> {
     
-    NSWindow *_window;
+    __weak NSWindow * _window;
     RHPreferencesWindowController *_preferencesWindowController;
 }
 
-@property (assign) IBOutlet NSWindow *window;
-@property (retain) RHPreferencesWindowController *preferencesWindowController;
+@property (weak) IBOutlet NSWindow *window;
+@property (strong) RHPreferencesWindowController *preferencesWindowController;
 
 
 #pragma mark - IBActions
