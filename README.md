@@ -105,5 +105,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 ### Version Support
-This Framework code compiles and has been tested on OS X 10.6 - 10.13
+This Framework code compiles and has been tested on OS X 10.8 - 10.13
 
