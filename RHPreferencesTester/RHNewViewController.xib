@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="8191" systemVersion="15A284" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8191"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="RHNewViewController">
+            <connections>
+                <outlet property="heightConstraint" destination="pJh-1s-dXa" id="n8Y-SY-Yut"/>
+                <outlet property="view" destination="c22-O7-iKe" id="Jzy-eW-JmN"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c22-O7-iKe">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="274"/>
+            <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dZa-b1-ksh">
+                    <rect key="frame" x="18" y="237" width="95" height="17"/>
+                    <animations/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Some Content!" id="UjQ-8q-NzJ">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Vbb-nE-dNx">
+                    <rect key="frame" x="370" y="20" width="92" height="17"/>
+                    <animations/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="MOAR content" id="ESr-4i-BAl">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Qf3-hP-WZQ">
+                    <rect key="frame" x="178" y="124" width="125" height="25"/>
+                    <animations/>
+                    <buttonCell key="cell" type="roundTextured" title="Textured Rounded" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="idm-xF-nK9">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                        <connections>
+                            <action selector="changeSize:" target="-2" id="aA3-7g-eZG"/>
+                        </connections>
+                    </buttonCell>
+                </button>
+            </subviews>
+            <constraints>
+                <constraint firstItem="Qf3-hP-WZQ" firstAttribute="centerX" secondItem="c22-O7-iKe" secondAttribute="centerX" id="4na-xy-JWH"/>
+                <constraint firstAttribute="bottom" secondItem="Vbb-nE-dNx" secondAttribute="bottom" constant="20" id="5MC-fa-43R"/>
+                <constraint firstItem="dZa-b1-ksh" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="20" id="dCe-c4-W1b"/>
+                <constraint firstItem="dZa-b1-ksh" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="20" id="fSD-R4-Xas"/>
+                <constraint firstAttribute="trailing" secondItem="Vbb-nE-dNx" secondAttribute="trailing" constant="20" id="jDD-xn-WU4"/>
+                <constraint firstItem="Vbb-nE-dNx" firstAttribute="top" secondItem="dZa-b1-ksh" secondAttribute="bottom" constant="200" id="pJh-1s-dXa"/>
+                <constraint firstItem="Vbb-nE-dNx" firstAttribute="leading" secondItem="dZa-b1-ksh" secondAttribute="trailing" constant="261" id="uee-yU-MlY"/>
+                <constraint firstItem="Qf3-hP-WZQ" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="yFd-sz-4lC"/>
+            </constraints>
+            <animations/>
+        </customView>
+    </objects>
+</document>
