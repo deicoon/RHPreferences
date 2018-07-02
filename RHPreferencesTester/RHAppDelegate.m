@@ -10,6 +10,7 @@
 #import "RHAboutViewController.h"
 #import "RHAccountsViewController.h"
 #import "RHWideViewController.h"
+#import "RHNewViewController.h"
 
 @implementation RHAppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -27,7 +28,7 @@
         
         NSArray *controllers = @[accounts, wide, 
                                 [RHPreferencesWindowController flexibleSpacePlaceholderController], 
-                                about];
+                                about, new];
         
         _preferencesWindowController = [[RHPreferencesWindowController alloc] initWithViewControllers:controllers andTitle:NSLocalizedString(@"Preferences", @"Preferences Window Title")];
     }
