@@ -12,38 +12,25 @@
 #import "RHWideViewController.h"
 
 @implementation RHAppDelegate
-
-@synthesize window = _window;
-@synthesize preferencesWindowController=_preferencesWindowController;
-
-- (void)dealloc
-{
-    [_preferencesWindowController release]; _preferencesWindowController = nil;
-    [super dealloc];
-}
-
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     // Insert code here to initialize your application
 }
 
-
-
-
 #pragma mark - IBActions
 -(IBAction)showPreferences:(id)sender{
     //if we have not created the window controller yet, create it now
     if (!_preferencesWindowController){
-        RHAccountsViewController *accounts = [[[RHAccountsViewController alloc] init] autorelease];
-        RHAboutViewController *about = [[[RHAboutViewController alloc] init] autorelease];
-        RHWideViewController *wide = [[[RHWideViewController alloc] init] autorelease];
+        RHAccountsViewController *accounts = [[RHAccountsViewController alloc] init];
+        RHAboutViewController *about = [[RHAboutViewController alloc] init];
+        RHWideViewController *wide = [[RHWideViewController alloc] init];
         
-        NSArray *controllers = [NSArray arrayWithObjects:accounts, wide, 
+        NSArray *controllers = @[accounts, wide, 
                                 [RHPreferencesWindowController flexibleSpacePlaceholderController], 
-                                about,
-                                nil];
+                                about];
         
         _preferencesWindowController = [[RHPreferencesWindowController alloc] initWithViewControllers:controllers andTitle:NSLocalizedString(@"Preferences", @"Preferences Window Title")];
+        _preferencesWindowController.selectedIndex = 1;
     }
     
     [_preferencesWindowController showWindow:self];

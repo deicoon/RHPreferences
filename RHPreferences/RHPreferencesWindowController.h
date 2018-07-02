@@ -33,42 +33,37 @@
 @protocol RHPreferencesViewControllerProtocol;
 
 @interface RHPreferencesWindowController : NSWindowController <NSToolbarDelegate>{
-
-    NSArray *_viewControllers;
-    NSToolbar *_toolbar;
-    NSArray *_toolbarItems;
-    
-    NSViewController<RHPreferencesViewControllerProtocol> *_selectedViewController;
-    NSString *_unloadedWindowTitle;
-    BOOL _windowTitleShouldAutomaticlyUpdateToReflectSelectedViewController;
-
+    NSArray <NSToolbarItem*>*_toolbarItems;
 }
 
 //init
--(id)initWithViewControllers:(NSArray*)controllers;
--(id)initWithViewControllers:(NSArray*)controllers andTitle:(NSString*)title;
+-(nonnull instancetype)initWithViewControllers:(NSArray*__nonnull)controllers;
+-(nonnull instancetype)initWithViewControllers:(NSArray*__nonnull)controllers andTitle:(NSString*__nullable)title;
 
 //properties
-@property (copy) NSString *windowTitle;
+@property (copy, nonnull) NSString * windowTitle;
+@property (copy, nullable) NSString *defaultWindowTitle;
 @property (assign) BOOL windowTitleShouldAutomaticlyUpdateToReflectSelectedViewController; //defaults to YES
 
-@property (retain) IBOutlet NSToolbar *toolbar;
-@property (retain) IBOutlet NSArray *viewControllers; //controllers should implement RHPreferencesViewControllerProtocol
+@property (nonnull) IBOutlet NSToolbar *toolbar;
+@property (nonatomic, nonnull) IBOutlet NSArray *viewControllers; //controllers should implement RHPreferencesViewControllerProtocol
 
 @property (assign) NSUInteger selectedIndex;
-@property (assign) NSViewController <RHPreferencesViewControllerProtocol> *selectedViewController;
+@property (weak, nonatomic, nullable) NSViewController <RHPreferencesViewControllerProtocol> *selectedViewController;
 
--(NSViewController <RHPreferencesViewControllerProtocol>*)viewControllerWithIdentifier:(NSString*)identifier;
+-(NSViewController <RHPreferencesViewControllerProtocol>*__nullable)viewControllerWithIdentifier:(NSString*__nonnull)identifier;
+
+-(void)presentError:(NSError*__nonnull)err forKeyPath:(NSString*__nonnull)key;
 
 //you can include these placeholder controllers amongst your array of view controllers to show their respective items in the toolbar
-+(id)separatorPlaceholderController;        // NSToolbarSeparatorItemIdentifier
-+(id)flexibleSpacePlaceholderController;    // NSToolbarFlexibleSpaceItemIdentifier
-+(id)spacePlaceholderController;            // NSToolbarSpaceItemIdentifier
++(id __nonnull)separatorPlaceholderController;        // NSToolbarSeparatorItemIdentifier
++(id __nonnull)flexibleSpacePlaceholderController;    // NSToolbarFlexibleSpaceItemIdentifier
++(id __nonnull)spacePlaceholderController;            // NSToolbarSpaceItemIdentifier
 
-+(id)showColorsPlaceholderController;       // NSToolbarShowColorsItemIdentifier
-+(id)showFontsPlaceholderController;        // NSToolbarShowFontsItemIdentifier
-+(id)customizeToolbarPlaceholderController; // NSToolbarCustomizeToolbarItemIdentifier
-+(id)printPlaceholderController;            // NSToolbarPrintItemIdentifier
++(id __nonnull)showColorsPlaceholderController;       // NSToolbarShowColorsItemIdentifier
++(id __nonnull)showFontsPlaceholderController;        // NSToolbarShowFontsItemIdentifier
++(id __nonnull)customizeToolbarPlaceholderController; // NSToolbarCustomizeToolbarItemIdentifier
++(id __nonnull)printPlaceholderController;            // NSToolbarPrintItemIdentifier
 
 @end
 
@@ -78,13 +73,18 @@
 @protocol RHPreferencesViewControllerProtocol <NSObject>
 @required
 
-@property (nonatomic, readonly, retain) NSString *identifier;
-@property (nonatomic, readonly, retain) NSImage *toolbarItemImage;
-@property (nonatomic, readonly, retain) NSString *toolbarItemLabel;
+@property (nonatomic, readonly, retain, nonnull) NSString *identifier;
+@property (nonatomic, readonly, retain, nullable) NSImage *toolbarItemImage;
+@property (nonatomic, readonly, retain, nonnull) NSString *toolbarItemLabel;
 
 @optional
 
-@property (nonatomic, readonly, retain) NSToolbarItem *toolbarItem; //optional, overrides the above 3 properties. allows for custom tabbar items.
+@property (nonatomic, readonly, retain, nonnull) NSToolbarItem *toolbarItem; //optional, overrides the above 3 properties. allows for custom tabbar items.
+@property (nonatomic, readonly, assign) BOOL isHiddenByDefault; //if an item is hidden by default; "alt" being pressed when showing RHPreferencesWindow will make it appear
+//@property (nonatomic, readonly, assign) NSArray* preferencesKeyPaths; //key paths that may be impacted by changes in the view controller
+//-(void)presentError:(NSError*)error forKeyPath:(NSString*)keypath;
+
+-(__kindof NSView*__nullable)viewForKeyPath:(NSString*__nullable)keypath; //return the first view that may be impacted by a change of the passed key path
 
 //methods called when switching between tabs
 -(void)viewWillAppear;
@@ -92,6 +92,8 @@
 -(void)viewWillDisappear;
 -(void)viewDidDisappear;
 
--(NSView*)initialKeyView;   // keyboard focus view on tab switch...
+-(void)viewWindowDidBecomeKey;
+
+@property (NS_NONATOMIC_IOSONLY, readonly, strong, nullable) NSView *initialKeyView;   // keyboard focus view on tab switch...
 
 @end
