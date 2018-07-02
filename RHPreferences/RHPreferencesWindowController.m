@@ -75,7 +75,9 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
 
 #pragma mark - RHPreferencesWindowController
 
-@interface RHPreferencesWindowController ()
+@interface RHPreferencesWindowController () {
+    NSArray* _toolbarItemIdentifiers;
+}
 
 //items
 -(NSToolbarItem*)toolbarItemWithItemIdentifier:(NSString*)identifier;
@@ -470,13 +472,17 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
 }
 
 -(NSArray*)toolbarItemIdentifiers {
+    if (_toolbarItemIdentifiers)
+        return _toolbarItemIdentifiers;
+    
     NSMutableArray *identifiers = [NSMutableArray arrayWithCapacity:self.viewControllers.count];
     
     for (id viewController in _viewControllers){
         [identifiers addObject:[self toolbarItemIdentifierForViewController:viewController]];
     }
     
-    return [NSArray arrayWithArray:identifiers];
+    _toolbarItemIdentifiers = [NSArray arrayWithArray:identifiers];
+    return _toolbarItemIdentifiers;
 }
 
 #pragma mark - Custom Placeholder Controller Toolbar Items
@@ -564,6 +570,7 @@ static const CGFloat RHPreferencesWindowControllerResizeAnimationDurationPer100P
     
     NSEvent* causalEvent = NSApp.currentEvent;
     
+    _toolbarItemIdentifiers = nil;
     NSUInteger currentItemCount = _toolbar.items.count;
     do {
         [_toolbar removeItemAtIndex:0];

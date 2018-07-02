@@ -30,7 +30,6 @@
                                 about];
         
         _preferencesWindowController = [[RHPreferencesWindowController alloc] initWithViewControllers:controllers andTitle:NSLocalizedString(@"Preferences", @"Preferences Window Title")];
-        _preferencesWindowController.selectedIndex = 1;
     }
     
     [_preferencesWindowController showWindow:self];
