@@ -25,12 +25,14 @@
         RHAccountsViewController *accounts = [[RHAccountsViewController alloc] init];
         RHAboutViewController *about = [[RHAboutViewController alloc] init];
         RHWideViewController *wide = [[RHWideViewController alloc] init];
+        RHNewViewController *new = [[RHNewViewController alloc] init];
         
         NSArray *controllers = @[accounts, wide, 
                                 [RHPreferencesWindowController flexibleSpacePlaceholderController], 
                                 about, new];
         
         _preferencesWindowController = [[RHPreferencesWindowController alloc] initWithViewControllers:controllers andTitle:NSLocalizedString(@"Preferences", @"Preferences Window Title")];
+        _preferencesWindowController.selectedIndex = 0;
     }
     
     [_preferencesWindowController showWindow:self];
