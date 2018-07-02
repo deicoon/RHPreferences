@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.homepage     	= "https://github.com/deicoon/RHPreferences"
   s.license      	= { :type => 'BSD', :file => 'LICENSE.md' }
   s.author       	= { "Richard Heard" => "",
-      						"Perceval Faramaz" => "perceval@deicoon.com" }
+      						"Perceval Faramaz" => "perceval@deicoon.com",
   						    "Hannes Tribus" => "hons82@gmail.com" }
   s.source       	= { :git => "https://github.com/deicoon/RHPreferences.git" }
   s.platform     	= :osx, '10.10'
